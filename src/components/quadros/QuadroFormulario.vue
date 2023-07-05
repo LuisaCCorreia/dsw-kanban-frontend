@@ -27,7 +27,7 @@
                 <v-row>
                     <v-card-text>Escolha a cor do Quadro</v-card-text>
                     <v-col>
-                        <v-color-picker v-model="item.corQuadro" hide-inputs show-swatches class="ml-4"></v-color-picker>
+                        <v-color-picker v-model="item.corFundo" hide-inputs show-swatches class="ml-4"></v-color-picker>
                     </v-col>
                 </v-row>
 
@@ -43,7 +43,7 @@
 </template>
 
 <script>
-// import axios from 'axios';
+import axios from 'axios';
 
 export default {
     props: ['controlador'],
@@ -67,10 +67,7 @@ export default {
             errorMessage: '',
 
             httpOptions: {
-                baseURL: this.$root.config.url,
                 headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + this.$root.credentials.token
                 }
             },
@@ -87,29 +84,26 @@ export default {
             return isNaN(ultimoId) ? 0 : ultimoId
         },
         salvaQuadro: function () {
-            let armazenamento = JSON.parse(localStorage.getItem("quadros"))
-            if (this.item._id === "") {
-                this.item._id = (this.verificarId(armazenamento) + 1).toString()
-                if (armazenamento) {
-                    armazenamento.push(this.item)
-                } else {
-                    armazenamento = [this.item]
-                }
+
+            if (this.item.id === "") {
+                axios.post("http://localhost:8081/api/v1/quadro/create", this.item, this.httpOptions)
+                    .then(() => {
+                        this.errorMessage = "";
+                        this.$router.replace('/quadros');
+                    }).catch(error => {
+                        this.errorMessage = error.response.data.message;
+                    });
             } else {
-                let index = armazenamento.findIndex((i) => i._id === this.item._id)
-                armazenamento[index] = this.item
+                axios.put(`http://localhost:8081/api/v1/quadro/update/${this.item.id}`, this.item, this.httpOptions)
+                    .then(() => {
+                        this.errorMessage = "";
+                        this.$router.replace('/quadros');
+                    }).catch(error => {
+                        this.errorMessage = error.response.data.message;
+                    });
             }
 
 
-            /*  axios.post(this.$root.config.url + "/receitas/", this.item, this.httpOptions)
-                  .then(() => {
-                      this.errorMessage = "";
-                      this.$router.replace('/quadros');
-                  }).catch(error => {
-                      this.errorMessage = error.response.data.message;
-                  });*/
-            localStorage.setItem("quadros", JSON.stringify(armazenamento))
-            console.log(JSON.parse(localStorage.getItem("quadros")))
             this.$router.replace('/quadros');
         },
 
@@ -118,7 +112,7 @@ export default {
         },
     },
 
-    created() {
+    mounted() {
         this.prepara();
     }
 }

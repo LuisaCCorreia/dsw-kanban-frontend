@@ -28,7 +28,7 @@
     data() {
       return {
         form: { 
-          token: this.$route.query.token, 
+          expiracao: this.$route.query.expiration, 
           email: this.$route.query.email, 
           senha: "", 
           senhaRepetida: "" 
@@ -38,7 +38,7 @@
     },
     methods: {
       processForm: function() {
-        axios.post(this.$root.config.url + "/usuarios/reset", this.form)
+        axios.post("http://localhost:8081/api/v1/usuario/reset", this.form)
           .then(() => {
             this.$router.replace('reseted');
             this.error = '';

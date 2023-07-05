@@ -18,15 +18,18 @@
         <v-col cols="12">
           <v-row align="center" justify="center" dense v-for="(quadro, index) in items" :key="index">
             <v-col cols="12" lg="6" md="6">
-              <v-card elevation="2" height="150" width="350" class="my-4" :color="quadro.corQuadro">
+              <v-card elevation="2" height="150" width="350" class="my-4" :color="quadro.corFundo">
                 <v-card-title>
-                  <span :style="{color: quadro.corTexto}">
-                   {{ quadro.titulo }} 
-                  </span>                  
+                  <span :style="{ color: quadro.corTexto }">
+                    {{ quadro.titulo }}
+                  </span>
                 </v-card-title>
                 <v-card-actions>
                   <v-btn color="accent" @click="editarQuadro(quadro)"><v-icon>mdi-pencil</v-icon></v-btn>
-                  <v-btn color="info" @click="removerQuadro(quadro)"><v-icon>mdi-eye</v-icon></v-btn>
+                  <v-btn color="info" @click="visualizarQuadro(quadro)"><v-icon>mdi-eye</v-icon></v-btn>
+                  <v-btn color="error" class="mt-1 mb-2 mr-2" @click="removerQuadro(quadro.id)">
+                    <v-icon>mdi-delete</v-icon>
+                  </v-btn>
                 </v-card-actions>
               </v-card>
             </v-col>
@@ -39,7 +42,7 @@
 
 
 <script>
-//import axios from 'axios';
+import axios from 'axios';
 
 export default {
   props: ['controlador'],
@@ -47,7 +50,7 @@ export default {
   data() {
     return {
       headers: [
-        { text: 'ID', align: 'start', sortable: true, value: '_id' },
+        { text: 'ID', align: 'start', sortable: true, value: 'id' },
         { text: 'Nome', align: 'start', sortable: true, value: 'nome' },
         { text: '', value: 'actions', sortable: false },
       ],
@@ -58,10 +61,7 @@ export default {
       filtroNome: '',
 
       httpOptions: {
-        baseURL: this.$root.config.url,
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + this.$root.credentials.token
         }
       },
@@ -71,30 +71,21 @@ export default {
   methods: {
     atualizaLista: function () {
       this.loading = true;
-      const quadros = JSON.parse(localStorage.getItem("quadros"))
-      this.items = quadros
-      this.totalItems = 2
 
-      /*    var sortBy = (this.options.sortBy && this.options.sortBy.length > 0) ? this.options.sortBy[0] : "";
-          var sortDesc = (this.options.sortDesc && this.options.sortDesc.length > 0) ? this.options.sortDesc[0] : "";
-          var page = this.options.page;
-          var itemsPerPage = this.options.itemsPerPage;
-          var queryString = `sortField=${sortBy}&sortDesc=${sortDesc}&page=${page}&itemsPage=${itemsPerPage}&filter=${this.filtroNome}`;
-
-          axios.get(this.$root.config.url + "/receitas?" + queryString, this.httpOptions)
-              .then(response => {
-                  this.items = response.data.items;
-                  this.totalItems = response.data.totalItems;
-                  this.loading = false;
-              })
-              .catch(error => {
-                  this.error = error.response.data.message;
-              })*/
+      axios.get("http://localhost:8081/api/v1/quadro/get", this.httpOptions)
+        .then(response => {
+          console.log(response)
+          this.items = response.data;
+          this.loading = false;
+        })
+        .catch(error => {
+          this.error = error.response.data.message;
+        })
 
     },
 
     novoQuadro: function () {
-      this.controlador.setItemSelecionado({ _id: "", titulo: '', corTexto: '', corQuadro: '' });
+      this.controlador.setItemSelecionado({ id: "", titulo: '', corTexto: '', corFundo: '' });
       this.$router.replace('/quadros/edit');
     },
 
@@ -103,7 +94,11 @@ export default {
       this.$router.replace('/quadros/edit');
     },
 
-    removerQuadro: function (item) {
+    removerQuadro: function (id) {
+      axios.delete(`http://localhost:8081/api/v1/quadro/delete/${id}`, this.httpOptions)
+    },
+
+    visualizarQuadro: function (item) {
       this.controlador.setItemSelecionado(item);
       this.$router.replace('/quadros/view');
     },

@@ -9,28 +9,9 @@
 
       <v-card>
         <v-card-title class="text-h5 grey lighten-2">
-          {{ titulo }}
+          Compartilhar Quadro
         </v-card-title>
-        <div class="text-center">
-          <v-row>
-            <v-col md="10">
-              <v-text-field class="ml-4" label="Escreva o título do quadro aqui"></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-card-text>Escolha a cor do Quadro</v-card-text>
-            <v-col>
-              <v-color-picker v-model="corQuadroAtual" hide-inputs show-swatches class="ml-4"></v-color-picker>
-            </v-col>
-          </v-row>
-
-          <v-row>
-            <v-card-text>Escolha a cor do texto</v-card-text>
-            <v-col>
-              <v-color-picker v-model="corTituloAtual" hide-inputs show-swatches class="ml-4"></v-color-picker>
-            </v-col>
-          </v-row>
-        </div>
+       
         <v-divider></v-divider>
 
         <v-card-actions>
@@ -49,8 +30,7 @@
    
 <script>
 export default {
-  name: 'Modal-CRUD',
-  props: ['titulo', 'dadosQuadro'],
+  name: 'Modal-Compartilhamento',
   data: () => ({
     visible: false,
     corTituloAtual:"",

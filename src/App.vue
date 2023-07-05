@@ -1,37 +1,43 @@
 <template>
   <v-app>
     <v-navigation-drawer app v-model="drawer">
-        <v-list nav dense>
-            <v-list-item-group active-class="deep-purple--text text--accent-4">
-                <v-list-item>
-                    <v-list-item-title @click="listaReceitas">Receitas</v-list-item-title>
-                </v-list-item>
-                <v-list-item>
-                    <v-list-item-title @click="listaQuadros">Quadros</v-list-item-title>
-                </v-list-item>
-            </v-list-item-group>
-        </v-list>
+      <v-list nav dense>
+        <v-list-item-group active-class="deep-purple--text text--accent-4">
+          <v-list-item>
+            <v-list-item-title @click="listaQuadros">Quadros</v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-title @click="listaQuadros">Favoritos</v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-title @click="listaQuadros">Coleções</v-list-item-title>
+          </v-list-item>
+        </v-list-item-group>
+      </v-list>
     </v-navigation-drawer>
-    
+
     <v-app-bar app color="deep-purple accent-4" dark>
-        <v-app-bar-nav-icon @click.stop="toggleDrawer" v-if="this.$root.credentials"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click.stop="toggleDrawer" v-if="this.$root.credentials"></v-app-bar-nav-icon>
+      <v-btn text @click="homePage">
         <v-toolbar-title>Kanban</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <span v-if="this.$root.credentials">
-          Olá, {{ this.$root.credentials.nome}}.
-          <router-link :to="{ name: 'change-password' }" replace>
-            <v-btn icon><v-icon>mdi-lock-reset</v-icon></v-btn>
-          </router-link>          
-          <v-btn icon @click="logout"><v-icon>mdi-logout</v-icon></v-btn>
-        </span>
+      </v-btn>
+
+      <v-spacer></v-spacer>
+      <span v-if="this.$root.credentials">
+        Olá, {{ this.$root.credentials.nome }}.
+        <router-link :to="{ name: 'change-password' }" replace>
+          <v-btn icon><v-icon>mdi-lock-reset</v-icon></v-btn>
+        </router-link>
+        <v-btn icon @click="logout"><v-icon>mdi-logout</v-icon></v-btn>
+      </span>
     </v-app-bar>
-  
+
     <v-main>
       <router-view></router-view>
     </v-main>
-  
+
     <v-footer app>
-        @BSI UNIRIO: Desenvolvimento de Servidor Web @2023
+      @BSI UNIRIO: Desenvolvimento de Servidor Web @2023
     </v-footer>
   </v-app>
 </template>
@@ -41,24 +47,29 @@ export default {
   name: 'App',
 
   data: () => ({
-    drawer: false
+    drawer: false,
   }),
 
+
   methods: {
-    toggleDrawer: function() {
-        this.drawer = !this.drawer;
+    toggleDrawer: function () {
+      this.drawer = !this.drawer;
     },
 
-    logout: function() {
-      this.$root.credentials = null;
+    homePage() {
       this.$router.replace('/');
     },
 
-    listaReceitas: function() {
-      this.$router.replace('/receitas');      
+    logout: function () {
+      this.$root.credentials = null;
+      this.homePage()
     },
-    listaQuadros: function() {
-      this.$router.replace('/quadros');      
+
+    listaReceitas: function () {
+      this.$router.replace('/receitas');
+    },
+    listaQuadros: function () {
+      this.$router.replace('/quadros');
     },
   },
 };
@@ -66,9 +77,10 @@ export default {
 
 <style>
 p.error {
-    color: white !important;
+  color: white !important;
 }
+
 .v-data-table__wrapper {
-    border-top: 1px solid #ccc;
+  border-top: 1px solid #ccc;
 }
 </style>

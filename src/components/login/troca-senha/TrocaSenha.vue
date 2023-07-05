@@ -9,7 +9,7 @@
       <v-form @submit.prevent="processForm">
         <v-text-field v-model="form.senhaAntiga" type="password" label="Entre com a senha atual" ></v-text-field>
         <v-text-field v-model="form.senhaNova" type="password" label="Entre com uma senha nova" ></v-text-field>
-        <v-text-field v-model="form.senhaNovaRepetida" type="password" label="Repita a sua senha nova" ></v-text-field>
+        <v-text-field v-model="form.senhaRepetida" type="password" label="Repita a sua senha nova" ></v-text-field>
         <v-btn type="submit" class="primary">Troca Senha</v-btn>
       </v-form>
     </v-col>
@@ -25,16 +25,13 @@
         form: { 
           senhaAntiga: "", 
           senhaNova: "", 
-          senhaNovaRepetida: "" 
+          senhaRepetida: "" 
         },
 
         error: '',
         
         httpOptions: {
-            baseURL: this.$root.config.url,
             headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
               'Authorization': 'Bearer ' + this.$root.credentials.token
             }
         },
@@ -43,7 +40,7 @@
 
     methods: {
       processForm: function() {
-        axios.post(this.$root.config.url + "/usuarios/trocaSenha", this.form, this.httpOptions)
+        axios.put("http://localhost:8081/api/v1/usuario/change", this.form, this.httpOptions)
           .then(() => {
             this.$router.replace('changed');
             this.error = '';

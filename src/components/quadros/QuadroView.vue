@@ -1,34 +1,49 @@
 <template>
-    <div v-show="this.$root.credentials" :style="{ backgroundColor: item.corQuadro }">
+    <div v-show="this.$root.credentials" :style="{ backgroundColor: item.corFundo, height: '100%' }">
         <v-container>
             <v-row>
                 <v-col cols="6">
-                    <h2 :style="{ color: item.corTexto }">{{ item.titulo }}</h2>
+                    <v-row class="mt-1">
+                        <v-btn icon color="secondary" class="mb-2 mr-2" @click="retornaListaQuadros">
+                            <v-icon>mdi-arrow-left</v-icon>
+                        </v-btn>
+                        <h2 :style="{ color: item.corTexto }">{{ item.titulo }}</h2>
+                        <v-btn icon color="yellow" class="mb-2 mr-2" @click="favoritar">
+                            <v-icon>{{ iconeFavoritado }}</v-icon>
+                        </v-btn>
+                    </v-row>
                 </v-col>
                 <v-col cols="6" class="text-right">
                     <v-btn color="primary" class="mb-2 mr-2" @click="novaLista">
                         <v-icon>mdi-plus</v-icon> Nova Lista
                     </v-btn>
-                    <v-btn color="error" class="mb-2 mr-2" @click="removerQuadro">
-                        <v-icon>mdi-delete</v-icon> Apagar Quadro
+
+                    <v-btn color="info" class="mb-2 mr-2" @click="novaLista">
+                        <v-icon>mdi-share-variant</v-icon> Compartilhar Quadro
                     </v-btn>
-                    <v-btn color="outlined" class="mb-2" @click="retornaListaQuadros">
-                        <v-icon>mdi-arrow-left</v-icon> Retornar a lista
-                    </v-btn>
+
                 </v-col>
             </v-row>
         </v-container>
 
         <v-container>
             <v-row>
-                <v-col md="5" v-for="(lista, index) in listas" :key="index">
-                    <draggable @change="onChangeItem" :list="listas" direction="horizontal" :animation="200"
-                        ghost-class="ghost-card" group="listas">
+                <draggable @change="onChangeItem" :list="listas" class="row" group="listas">
+                    <v-col md="4" v-for="(lista, index) in listas" :key="index">
                         <v-sheet shaped elevation="10" color="grey lighten-2" class="pa-3 mr-1" max-width="450">
-                            <h2 class="pa-5">{{ lista.titulo }}</h2>
+                            <v-row>
+                                <h2 class="pa-5">{{ lista.titulo }}</h2>
+                                <v-col class="mt-4 text-right">
+                                    <v-btn small color="error" class="mr-2"><v-icon>mdi-delete</v-icon></v-btn>
+                                    <v-btn small color="accent"
+                                        @click="editarLista(lista)"><v-icon>mdi-pencil</v-icon></v-btn>
+                                </v-col>
+
+                            </v-row>
+
                             <draggable @change="onChangeItem" :list="lista.tarefas" :animation="200"
                                 ghost-class="ghost-card" group="tarefas">
-                                <v-card elevation="2" height="75" width="400" class="ma-4"
+                                <v-card elevation="2" height="75" width="325" class="ma-4"
                                     v-for="(tarefa, index) in lista.tarefas" :key="index">
                                     <v-card-title>
                                         {{ tarefa }}
@@ -36,8 +51,8 @@
                                 </v-card>
                             </draggable>
                         </v-sheet>
-                    </draggable>
-                </v-col>
+                    </v-col>
+                </draggable>
             </v-row>
         </v-container>
     </div>
@@ -56,7 +71,7 @@ export default {
                 { text: "Quantidade", align: "start", sortable: true, value: "qtde" },
             ],
             item: null,
-            teste1: ['t1', 't2'],
+            iconeFavoritado: "mdi-star-outline",
             listas: [],
             httpOptions: {
                 baseURL: this.$root.config.url,
@@ -72,16 +87,7 @@ export default {
         prepara: function () {
             this.item = this.controlador.itemSelecionado;
             this.listas = this.item.listas ? this.item.listas : [];
-        },
-        removerQuadro: function () {
-            let armazenamento = JSON.parse(localStorage.getItem("quadros"));
-            armazenamento = armazenamento.filter((i) => i._id !== this.item._id);
-            localStorage.setItem("quadros", JSON.stringify(armazenamento));
-            this.$router.replace("/quadros");
-            /*  axios.delete("http://localhost:3000/receitas/" + this.item._id, this.httpOptions)
-                  .then(() => {
-                      this.$router.replace('/receitas');
-                  });*/
+            this.iconeFavoritado = this.item.favorito?"mdi-star":"mdi-star-outline"
         },
         novaLista() {
             this.controlador.setItemSelecionado({ quadroid: this.item._id, tituloLista: "", tarefas: [] });
@@ -90,15 +96,24 @@ export default {
         retornaListaQuadros: function () {
             this.$router.replace("/quadros");
         },
+        editarLista() {
+
+        },
         salvarAlteracao() {
             let armazenamento = JSON.parse(localStorage.getItem("quadros"))
-            console.log(armazenamento)
             let index = armazenamento.findIndex((i) => i._id === this.item._id)
             armazenamento[index].listas = this.listas
             localStorage.setItem("quadros", JSON.stringify(armazenamento))
         },
         onChangeItem() {
             this.salvarAlteracao()
+        },
+        favoritar(){
+            this.item.favorito = this.item.favorito?false:true
+            let armazenamento = JSON.parse(localStorage.getItem("quadros"))
+            let index = armazenamento.findIndex((i) => i._id === this.item._id)
+            armazenamento[index].favorito = this.item.favorito
+            localStorage.setItem("quadros", JSON.stringify(armazenamento))
         }
     },
     created() {
