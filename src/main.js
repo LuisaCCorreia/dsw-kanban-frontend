@@ -31,9 +31,9 @@ import ReceitaRemove from './components/receitas/ReceitaRemove.vue'
 import QuadrosLista from "./components/quadros/QuadrosLista.vue"
 import QuadroFormulario from "./components/quadros/QuadroFormulario.vue"
 import QuadroView from "./components/quadros/QuadroView.vue"
+import FavoritosLista from "./components/quadros/FavoritosLista.vue"
+import CompartilhadosLista from "./components/quadros/CompartilhadosLista.vue"
 
-/** Listas */
-import ListaForm from "./components/listas/ListaFormulario.vue"
 
 /* Controlador do cadastro de quadros */
 var controladorCadastro = ControladorCRUD.criaControladorCRUD();
@@ -132,9 +132,15 @@ const router = new Router({
     props: { 'controlador': controladorCadastro },
   },
   {
-    path: '/quadros/view/novalista',
-    name: 'lista-form',
-    component: ListaForm, 
+    path: '/quadros/favoritos/',
+    name: 'quadros-favoritos',
+    component: FavoritosLista, 
+    props: { 'controlador': controladorCadastro },
+  },
+  {
+    path: '/quadros/compartilhados/',
+    name: 'quadros-compartilhados',
+    component: CompartilhadosLista, 
     props: { 'controlador': controladorCadastro },
   },
 ]})

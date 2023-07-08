@@ -7,12 +7,12 @@
           <p class="lead">Cras justo odio, dapibus ac facilisis in, egestas eget quam. Fusce dapibus, tellus ac cursus
             commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
 
-            <p v-if="!this.$root.credentials">
-              <router-link class="link" :to="{ name: 'login' }">
-                <a class="btn btn-lg btn-success" href="#" role="button">Login</a>
-              </router-link>
-            </p>
-          </div>
+          <p v-if="!this.$root.credentials">
+            <router-link class="link" :to="{ name: 'login' }">
+              <a class="btn btn-lg btn-success" href="#" role="button">Login</a>
+            </router-link>
+          </p>
+        </div>
       </v-col>
     </v-row>
 
@@ -57,8 +57,10 @@ export default {
 }
 </script>
 
-<style lang="css" scoped>div.jumbotron {
+<style lang="css" scoped>
+div.jumbotron {
   background: #eee;
   border-radius: 16px;
   padding: 4px 32px;
-}</style>
+}
+</style>

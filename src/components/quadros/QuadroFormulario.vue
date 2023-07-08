@@ -56,7 +56,7 @@ export default {
                 { text: '', value: 'actions', sortable: false },
             ],
 
-            item: null,
+            item: { },
 
             novoIngrediente: {
                 item: '',
@@ -77,7 +77,7 @@ export default {
         prepara: function () {
             this.errorMessage = "";
             this.item = this.controlador.itemSelecionado;
-            this.titulo = (this.item._id === "") ? "Criar Quadro" : "Editar Quadro";
+            this.titulo = (this.item.id === "") ? "Criar Quadro" : "Editar Quadro";
         },
         verificarId(armazenamento) {
             let ultimoId = armazenamento && armazenamento.length > 0 ? +armazenamento[armazenamento.length - 1]._id : 0

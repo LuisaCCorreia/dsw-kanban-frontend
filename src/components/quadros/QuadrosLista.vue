@@ -23,6 +23,9 @@
                   <span :style="{ color: quadro.corTexto }">
                     {{ quadro.titulo }}
                   </span>
+                  <v-layout v-if="quadro.favorito" justify-end>
+                    <v-icon color="yellow">mdi-star</v-icon>
+                  </v-layout>
                 </v-card-title>
                 <v-card-actions>
                   <v-btn color="accent" @click="editarQuadro(quadro)"><v-icon>mdi-pencil</v-icon></v-btn>
@@ -55,11 +58,11 @@ export default {
         { text: '', value: 'actions', sortable: false },
       ],
       items: [],
+      favoritados: [],
       totalItems: 0,
       loading: false,
       options: { itemsPerPage: 10 },
       filtroNome: '',
-
       httpOptions: {
         headers: {
           'Authorization': 'Bearer ' + this.$root.credentials.token
@@ -70,13 +73,12 @@ export default {
 
   methods: {
     atualizaLista: function () {
-      this.loading = true;
-
-      axios.get("http://localhost:8081/api/v1/quadro/get", this.httpOptions)
+      axios.get("http://localhost:8081/api/v1/usuario/get", this.httpOptions)
         .then(response => {
           console.log(response)
-          this.items = response.data;
-          this.loading = false;
+          this.items = response.data.quadros;
+          this.favoritados = response.data.favoritos
+          this.verificarFavoritados()
         })
         .catch(error => {
           this.error = error.response.data.message;
@@ -96,6 +98,19 @@ export default {
 
     removerQuadro: function (id) {
       axios.delete(`http://localhost:8081/api/v1/quadro/delete/${id}`, this.httpOptions)
+        .then(() => {
+          this.atualizaLista()
+        })
+
+    },
+    verificarFavoritados() {
+      for (let i = 0; i < this.items.length; i++) {
+        for (let j = 0; j < this.favoritados.length; j++) {
+          if (this.items[i].id === this.favoritados[j].id) {
+            this.items[i].favorito = true
+          }
+        }
+      }
     },
 
     visualizarQuadro: function (item) {
@@ -103,9 +118,8 @@ export default {
       this.$router.replace('/quadros/view');
     },
   },
-
-  created() {
-    console.log(this.controlador.title);
+  mounted() {
+    console.log("mounted")
     this.atualizaLista();
   }
 }

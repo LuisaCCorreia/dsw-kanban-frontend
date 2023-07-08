@@ -65,7 +65,7 @@
 </template>
 
 <script>
-// import axios from 'axios';
+ import axios from 'axios';
 
 export default {
     props: ['controlador'],
@@ -93,8 +93,6 @@ export default {
             httpOptions: {
                 baseURL: this.$root.config.url,
                 headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + this.$root.credentials.token
                 }
             },
@@ -115,25 +113,14 @@ export default {
             this.tarefas.splice(index, 1)
         },
         salvaLista: function () {
-            let armazenamento = JSON.parse(localStorage.getItem("quadros"))
-            let index = armazenamento.findIndex((i) => i._id === this.item.quadroid)
-            let novaLista = {titulo: this.item.tituloLista, tarefas:this.tarefas}
-
-            if(armazenamento[index].listas) {
-                armazenamento[index].listas.push(novaLista)
-            } else {
-                armazenamento[index].listas = [novaLista]
-            }
-
-            /*  axios.post(this.$root.config.url + "/receitas/", this.item, this.httpOptions)
+              axios.post(`http://localhost:8081/api/v1/quadro/update/${this.item.id}`, this.item, this.httpOptions)
                   .then(() => {
                       this.errorMessage = "";
                       this.$router.replace('/quadros');
                   }).catch(error => {
                       this.errorMessage = error.response.data.message;
-                  });*/
-              localStorage.setItem("quadros", JSON.stringify(armazenamento))
-              this.controlador.setItemSelecionado(armazenamento[index])
+                  });
+
               this.$router.replace('/quadros/view');
         },
 

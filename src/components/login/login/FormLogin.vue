@@ -59,21 +59,19 @@ export default {
     getDadosUsuario() {
       axios.get("http://localhost:8081/api/v1/usuario/get", { headers: { 'Authorization': `Bearer ${this.token}` } })
         .then(response => {
-          const credentials = { token: this.token,  nome: response.data.nome, email: response.data.email}
-          this.$root.credentials = credentials
+           this.$root.credentials = { token: this.token,  nome: response.data.nome, email: response.data.email}
+          localStorage.setItem("credentials", JSON.stringify(this.$root.credentials))
+          this.$router.replace('/');
         })
         .catch(error => {
-          this.error = error.response.data.message;
+          console.log(error)
+          this.error = error;
         })
     },
     processForm: function () {
       this.error = '';
-
       this.login()
-
-      this.$router.replace('/');
-
     },
-  }
+  },
 }
 </script>

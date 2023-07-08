@@ -4,10 +4,13 @@
       <v-list nav dense>
         <v-list-item-group active-class="deep-purple--text text--accent-4">
           <v-list-item>
-            <v-list-item-title @click="listaQuadros">Quadros</v-list-item-title>
+            <v-list-item-title @click="listaQuadros"> Meus Quadros</v-list-item-title>
           </v-list-item>
           <v-list-item>
-            <v-list-item-title @click="listaQuadros">Favoritos</v-list-item-title>
+            <v-list-item-title @click="listaFavoritos">Favoritos</v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-title @click="listaCompartilhados"> Compartilhados</v-list-item-title>
           </v-list-item>
           <v-list-item>
             <v-list-item-title @click="listaQuadros">Coleções</v-list-item-title>
@@ -21,7 +24,6 @@
       <v-btn text @click="homePage">
         <v-toolbar-title>Kanban</v-toolbar-title>
       </v-btn>
-
       <v-spacer></v-spacer>
       <span v-if="this.$root.credentials">
         Olá, {{ this.$root.credentials.nome }}.
@@ -49,8 +51,7 @@ export default {
   data: () => ({
     drawer: false,
   }),
-
-
+  
   methods: {
     toggleDrawer: function () {
       this.drawer = !this.drawer;
@@ -61,7 +62,8 @@ export default {
     },
 
     logout: function () {
-      this.$root.credentials = null;
+      localStorage.setItem("credentials", null)
+      this.$root.credentials=null
       this.homePage()
     },
 
@@ -71,7 +73,19 @@ export default {
     listaQuadros: function () {
       this.$router.replace('/quadros');
     },
+    listaFavoritos: function () {
+      this.$router.replace('/quadros/favoritos');
+    },
+    listaCompartilhados: function () {
+      this.$router.replace('/quadros/compartilhados');
+    },
+    storage(){
+      this.$root.credentials = JSON.parse(localStorage.getItem('credentials'))
+    }
   },
+  mounted(){
+    this.storage()
+  }
 };
 </script>
 

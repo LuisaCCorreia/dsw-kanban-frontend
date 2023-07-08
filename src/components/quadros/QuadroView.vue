@@ -13,43 +13,56 @@
                         </v-btn>
                     </v-row>
                 </v-col>
-                <v-col cols="6" class="text-right">
-                    <v-btn color="primary" class="mb-2 mr-2" @click="novaLista">
-                        <v-icon>mdi-plus</v-icon> Nova Lista
+                <v-col cols="3" class="text-right">
+                    <v-btn color="info" :disabled="item.editavel !== undefined && item.editavel === false" class="mb-2 mr-2"
+                        @click="novaLista">
+                        Adicionar Lista
                     </v-btn>
-
-                    <v-btn color="info" class="mb-2 mr-2" @click="novaLista">
-                        <v-icon>mdi-share-variant</v-icon> Compartilhar Quadro
-                    </v-btn>
-
+                </v-col>
+                <v-col cols="3" class="text-right">
+                    <ModalCompartilhamento :permissaoEdicao="item.editavel" :quadroID="item.id" />
                 </v-col>
             </v-row>
         </v-container>
 
         <v-container>
             <v-row>
-                <draggable @change="onChangeItem" :list="listas" class="row" group="listas">
+                <draggable :options="{ disabled: item.editavel !== undefined && item.editavel === false }"
+                    @change="onChangeItem" :list="listas" class="row" group="listas">
                     <v-col md="4" v-for="(lista, index) in listas" :key="index">
                         <v-sheet shaped elevation="10" color="grey lighten-2" class="pa-3 mr-1" max-width="450">
                             <v-row>
                                 <h2 class="pa-5">{{ lista.titulo }}</h2>
-                                <v-col class="mt-4 text-right">
-                                    <v-btn small color="error" class="mr-2"><v-icon>mdi-delete</v-icon></v-btn>
-                                    <v-btn small color="accent"
-                                        @click="editarLista(lista)"><v-icon>mdi-pencil</v-icon></v-btn>
-                                </v-col>
+                                <v-layout class="mt-5" justify-end>
+                                        <ModalLista :permissaoEdicao="item.editavel" :tituloInicial="lista.titulo"
+                                            :index="index" :salvar="editarLista" />
 
+                                        <v-btn small color="error"
+                                            :disabled="item.editavel !== undefined && item.editavel === false"
+                                            @click="apagarLista(index)" class="ml-1 mr-2"><v-icon>mdi-delete</v-icon></v-btn>
+                                </v-layout>
                             </v-row>
-
-                            <draggable @change="onChangeItem" :list="lista.tarefas" :animation="200"
-                                ghost-class="ghost-card" group="tarefas">
+                            <draggable :options="{ disabled: item.editavel !== undefined && item.editavel === false }"
+                                @change="onChangeItem" :list="lista.tarefas" :animation="200" ghost-class="ghost-card"
+                                group="tarefas">
                                 <v-card elevation="2" height="75" width="325" class="ma-4"
-                                    v-for="(tarefa, index) in lista.tarefas" :key="index">
+                                    v-for="(tarefa, index2) in lista.tarefas" :key="index2">
                                     <v-card-title>
-                                        {{ tarefa }}
+                                        {{ tarefa.conteudo }}
+                                        <v-layout justify-end>
+                                            <v-btn :disabled="item.editavel !== undefined && item.editavel === false" icon
+                                                @click="apagarTarefa(index, index2)">
+                                                <v-icon color="error" dark>
+                                                    mdi-close
+                                                </v-icon>
+                                            </v-btn>
+                                        </v-layout>
                                     </v-card-title>
                                 </v-card>
                             </draggable>
+                            <v-layout justify-center>
+                                <ModalTarefa :permissaoEdicao="item.editavel" :salvar="adicionarTarefa" :index="index" />
+                            </v-layout>
                         </v-sheet>
                     </v-col>
                 </draggable>
@@ -59,25 +72,23 @@
 </template>
 
 <script>
-// import axios from 'axios';
+import axios from 'axios';
 import draggable from 'vuedraggable';
+import ModalLista from '../modais/ModalLista.vue';
+import ModalCompartilhamento from '../modais/ModalCompartilhamento.vue';
+import ModalTarefa from '../modais/ModalTarefa.vue';
 
 export default {
     props: ["controlador"],
     data() {
         return {
-            headers: [
-                { text: "Ingrediente", align: "start", sortable: true, value: "item" },
-                { text: "Quantidade", align: "start", sortable: true, value: "qtde" },
-            ],
             item: null,
             iconeFavoritado: "mdi-star-outline",
             listas: [],
+            contadorNovasListas: 1,
+            edicaoLista: false,
             httpOptions: {
-                baseURL: this.$root.config.url,
                 headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
                     "Authorization": "Bearer " + this.$root.credentials.token
                 }
             },
@@ -87,38 +98,134 @@ export default {
         prepara: function () {
             this.item = this.controlador.itemSelecionado;
             this.listas = this.item.listas ? this.item.listas : [];
-            this.iconeFavoritado = this.item.favorito?"mdi-star":"mdi-star-outline"
+            this.iconeFavoritado = this.item.favorito ? "mdi-star" : "mdi-star-outline"
         },
         novaLista() {
-            this.controlador.setItemSelecionado({ quadroid: this.item._id, tituloLista: "", tarefas: [] });
-            this.$router.replace("/quadros/view/novalista");
+            this.listas.push({ titulo: `Nova Lista ${this.contadorNovasListas}`, tarefas: [] })
+            this.contadorNovasListas = this.contadorNovasListas + 1
+            this.controlador.setItemSelecionado(
+                {
+                    id: this.item.id,
+                    titulo: this.item.titulo,
+                    corFundo: this.item.corFundo,
+                    corTexto: this.item.corTexto,
+                    listas: this.listas
+                }
+            );
+            axios.put(`http://localhost:8081/api/v1/quadro/update/${this.item.id}`, this.item, this.httpOptions)
+                .then(() => {
+                    this.errorMessage = "";
+                }).catch(error => {
+                    this.errorMessage = error.response.data.message;
+                });
+        },
+        apagarLista(index) {
+            this.listas.splice(index, 1)
+            this.controlador.setItemSelecionado(
+                {
+                    id: this.item.id,
+                    titulo: this.item.titulo,
+                    corFundo: this.item.corFundo,
+                    corTexto: this.item.corTexto,
+                    listas: this.listas
+                }
+            );
+            axios.put(`http://localhost:8081/api/v1/quadro/update/${this.item.id}`, this.item, this.httpOptions)
+                .then(() => {
+                    this.errorMessage = "";
+                }).catch(error => {
+                    this.errorMessage = error.response.data.message;
+                });
         },
         retornaListaQuadros: function () {
             this.$router.replace("/quadros");
         },
-        editarLista() {
+        editarLista(index, titulo) {
+            this.listas[index].titulo = titulo
+            this.controlador.setItemSelecionado(
+                {
+                    id: this.item.id,
+                    titulo: this.item.titulo,
+                    corFundo: this.item.corFundo,
+                    corTexto: this.item.corTexto,
+                    listas: this.listas
+                }
+            );
+            axios.put(`http://localhost:8081/api/v1/quadro/update/${this.item.id}`, this.item, this.httpOptions)
+                .then((res) => {
+                    console.log(res)
+                    this.errorMessage = "";
+                }).catch(error => {
+                    this.errorMessage = error.response.data.message;
+                });
+
+        },
+        adicionarTarefa(index, tarefa) {
+            this.listas[index].tarefas.push({ conteudo: tarefa })
+            this.controlador.setItemSelecionado(
+                {
+                    id: this.item.id,
+                    titulo: this.item.titulo,
+                    corFundo: this.item.corFundo,
+                    corTexto: this.item.corTexto,
+                    listas: this.listas
+                }
+            );
+            axios.put(`http://localhost:8081/api/v1/quadro/update/${this.item.id}`, this.item, this.httpOptions)
+                .then((res) => {
+                    console.log(res)
+                    this.errorMessage = "";
+                }).catch(error => {
+                    this.errorMessage = error.response.data.message;
+                });
 
         },
         salvarAlteracao() {
-            let armazenamento = JSON.parse(localStorage.getItem("quadros"))
-            let index = armazenamento.findIndex((i) => i._id === this.item._id)
-            armazenamento[index].listas = this.listas
-            localStorage.setItem("quadros", JSON.stringify(armazenamento))
+            axios.put(`http://localhost:8081/api/v1/quadro/update/${this.item.id}`, this.item, this.httpOptions)
+                .then((res) => {
+                    console.log(res)
+                    this.errorMessage = "";
+                }).catch(error => {
+                    this.errorMessage = error.response.data.message;
+                });
         },
         onChangeItem() {
             this.salvarAlteracao()
         },
-        favoritar(){
-            this.item.favorito = this.item.favorito?false:true
-            let armazenamento = JSON.parse(localStorage.getItem("quadros"))
-            let index = armazenamento.findIndex((i) => i._id === this.item._id)
-            armazenamento[index].favorito = this.item.favorito
-            localStorage.setItem("quadros", JSON.stringify(armazenamento))
-        }
+        apagarTarefa(index, index2) {
+            this.listas[index].tarefas.splice(index2, 1)
+            this.salvarAlteracao()
+        },
+        favoritar() {
+            this.iconeFavoritado = "mdi-star"
+            axios.post(`http://localhost:8081/api/v1/quadro/favorite/${this.item.id}`, {}, this.httpOptions)
+                .then(() => {
+                    this.errorMessage = "";
+                }).catch(error => {
+                    this.errorMessage = error.response.data.message;
+                });
+        },
+        verificarFavoritado() {
+            axios.get("http://localhost:8081/api/v1/usuario/get", this.httpOptions)
+                .then(response => {
+                    let favoritos = response.data.favoritos
+                    let favoritado = favoritos.find((i) => i.id === this.item.id)
+                    if (favoritado) {
+                        this.iconeFavoritado = "mdi-star"
+                    }
+                })
+                .catch(error => {
+                    console.log(error)
+                    this.error = error;
+                })
+        },
     },
     created() {
         this.prepara();
     },
-    components: { draggable }
+    mounted() {
+        this.verificarFavoritado()
+    },
+    components: { draggable, ModalLista, ModalCompartilhamento, ModalTarefa }
 }
 </script>
