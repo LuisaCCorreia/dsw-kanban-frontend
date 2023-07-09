@@ -102,9 +102,6 @@ export default {
                         this.errorMessage = error.response.data.message;
                     });
             }
-
-
-            this.$router.replace('/quadros');
         },
 
         retornaLista: function () {

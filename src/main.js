@@ -22,11 +22,6 @@ import RecuperacaoSenhaSucesso from './components/login/esquecimento-senha/Recup
 import TrocaSenha from './components/login/troca-senha/TrocaSenha.vue'
 import TrocaSenhaSucesso from './components/login/troca-senha/TrocaSenhaSucesso.vue'
 
-/* Receitas */
-import ReceitaLista from './components/receitas/ReceitaLista.vue'
-import ReceitaFormulario from './components/receitas/ReceitaFormulario.vue'
-import ReceitaRemove from './components/receitas/ReceitaRemove.vue'
-
 /* Quadros */
 import QuadrosLista from "./components/quadros/QuadrosLista.vue"
 import QuadroFormulario from "./components/quadros/QuadroFormulario.vue"
@@ -94,24 +89,6 @@ const router = new Router({
     path: '/login/changed',
     name: 'password-changed',
     component: TrocaSenhaSucesso,
-  },
-  {
-    path: '/receitas',
-    name: 'receitas-lista',
-    component: ReceitaLista, 
-    props: { 'controlador': controladorCadastro },
-  },
-  {
-    path: '/receitas/edit',
-    name: 'receitas-form',
-    component: ReceitaFormulario, 
-    props: { 'controlador': controladorCadastro },
-  },
-  {
-    path: '/receitas/view',
-    name: 'receitas-remove',
-    component: ReceitaRemove, 
-    props: { 'controlador': controladorCadastro },
   },
   {
     path: '/quadros',
