@@ -12,7 +12,7 @@
             <v-row>
                 <v-col cols="12">
                     <v-row align="center" justify="center" dense v-for="(item, index) in items" :key="index">
-                        <v-col cols="12" lg="6" md="6">
+                        <v-col v-if="item.quadro" cols="12" lg="6" md="6">
                             <v-card elevation="2" height="150" width="350" class="my-4" :color="item.quadro.corFundo">
                                 <v-card-title>
                                     <span :style="{ color: item.quadro.corTexto }">
@@ -68,6 +68,7 @@ export default {
                     this.verificarFavoritados()
                 })
                 .catch(error => {
+                    console.log(error)
                     this.error = error.response.data.message;
                 })
 
@@ -93,12 +94,12 @@ export default {
         verificarFavoritados() {
             for (let i = 0; i < this.items.length; i++) {
                 for (let j = 0; j < this.favoritados.length; j++) {
-                    if (this.items[i].quadro.id === this.favoritados[j].id) {
+                    if (this.items[i].quadro && this.items[i].quadro.id === this.favoritados[j].id) {
                         this.items[i].quadro.favorito = true
                     }
                 }
             }
-            
+
         },
         visualizarQuadro: function (item) {
             this.controlador.setItemSelecionado({ ...item.quadro, editavel: item.editavel });
