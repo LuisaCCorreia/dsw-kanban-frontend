@@ -3,7 +3,7 @@
     <v-container>
       <v-row>
         <v-col cols="9">
-          <h2>Quadros</h2>
+          <h2>Meus Quadros</h2>
         </v-col>
         <v-col cols="3" class="text-right">
           <v-btn color="primary" dark class="mb-2" @click="novoQuadro">

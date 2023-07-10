@@ -23,9 +23,11 @@
                                     </v-layout>
                                 </v-card-title>
                                 <v-card-actions>
-                                    <v-btn color="accent" @click="editarQuadro(quadro)"><v-icon>mdi-pencil</v-icon></v-btn>
+                                    <v-btn :disabled="quadro.editavel !== undefined && quadro.editavel === false"
+                                        color="accent" @click="editarQuadro(quadro)"><v-icon>mdi-pencil</v-icon></v-btn>
                                     <v-btn color="info" @click="visualizarQuadro(quadro)"><v-icon>mdi-eye</v-icon></v-btn>
-                                    <v-btn color="error" class="mt-1 mb-2 mr-2" @click="removerQuadro(quadro.id)">
+                                    <v-btn :disabled="quadro.editavel !== undefined && quadro.editavel === false"
+                                        color="error" class="mt-1 mb-2 mr-2" @click="removerQuadro(quadro.id)">
                                         <v-icon>mdi-delete</v-icon>
                                     </v-btn>
                                 </v-card-actions>
@@ -48,12 +50,7 @@ export default {
     data() {
         return {
             items: [],
-            favoritados: [],
-            totalItems: 0,
-            loading: false,
-            options: { itemsPerPage: 10 },
-            filtroNome: '',
-
+            compartilhados: [],
             httpOptions: {
                 headers: {
                     'Authorization': 'Bearer ' + this.$root.credentials.token
@@ -67,6 +64,8 @@ export default {
             axios.get("http://localhost:8081/api/v1/usuario/get", this.httpOptions)
                 .then(response => {
                     this.items = response.data.favoritos;
+                    this.compartilhados = response.data.compartilhados;
+                    this.verificarPermissaoEdicao()
                 })
                 .catch(error => {
                     this.error = error.response.data.message;
@@ -91,20 +90,16 @@ export default {
                 })
 
         },
-        /*verificarFavoritado() {
-          axios.get("http://localhost:8081/api/v1/usuario/get", this.httpOptions)
-            .then(response => {
-              let favoritos = response.data.favoritos
-              let favoritado = favoritos.find((i) => i.id === this.item.id)
-              if (favoritado) {
-                this.iconeFavoritado = "mdi-star"
-              }
-            })
-            .catch(error => {
-              console.log(error)
-              this.error = error;
-            })
-        },*/
+        verificarPermissaoEdicao() {
+            for (let i = 0; i < this.items.length; i++) {
+                for (let j = 0; j < this.compartilhados.length; j++) {
+                    if (this.compartilhados[j].quadro.id === this.items[i].id) {
+                        this.items[i].editavel = this.compartilhados[j].editavel
+                    }
+                }
+            }
+
+        },
 
         visualizarQuadro: function (item) {
             this.controlador.setItemSelecionado(item);

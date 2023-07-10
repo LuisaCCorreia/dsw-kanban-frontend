@@ -28,6 +28,8 @@ import QuadroFormulario from "./components/quadros/QuadroFormulario.vue"
 import QuadroView from "./components/quadros/QuadroView.vue"
 import FavoritosLista from "./components/quadros/FavoritosLista.vue"
 import CompartilhadosLista from "./components/quadros/CompartilhadosLista.vue"
+import ColecoesLista from "./components/colecoes/ColecoesLista.vue"
+import ColecaoView from "./components/colecoes/ColecaoView.vue"
 
 
 /* Controlador do cadastro de quadros */
@@ -118,6 +120,18 @@ const router = new Router({
     path: '/quadros/compartilhados/',
     name: 'quadros-compartilhados',
     component: CompartilhadosLista, 
+    props: { 'controlador': controladorCadastro },
+  },
+  {
+    path: '/quadros/colecoes/',
+    name: 'colecoes-quadros',
+    component: ColecoesLista, 
+    props: { 'controlador': controladorCadastro },
+  },
+  {
+    path: '/quadros/colecoes/view',
+    name: 'colecao-view',
+    component: ColecaoView, 
     props: { 'controlador': controladorCadastro },
   },
 ]})

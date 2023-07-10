@@ -189,7 +189,8 @@ export default {
                     this.errorMessage = error.response.data.message;
                 });
         },
-        onChangeItem() {
+        onChangeItem(e) {
+            console.log("On change item", e)
             this.salvarAlteracao()
         },
         apagarTarefa(index, index2) {

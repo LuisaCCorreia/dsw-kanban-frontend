@@ -13,7 +13,7 @@
             <v-list-item-title @click="listaCompartilhados"> Compartilhados</v-list-item-title>
           </v-list-item>
           <v-list-item>
-            <v-list-item-title @click="listaQuadros">Coleções</v-list-item-title>
+            <v-list-item-title @click="listaColecoes">Coleções</v-list-item-title>
           </v-list-item>
         </v-list-item-group>
       </v-list>
@@ -78,6 +78,9 @@ export default {
     },
     listaCompartilhados: function () {
       this.$router.replace('/quadros/compartilhados');
+    },
+    listaColecoes: function () {
+      this.$router.replace('/quadros/colecoes');
     },
     storage(){
       this.$root.credentials = JSON.parse(localStorage.getItem('credentials'))

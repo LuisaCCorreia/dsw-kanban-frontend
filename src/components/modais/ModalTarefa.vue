@@ -10,7 +10,7 @@
                     Adicionar Tarefa
                 </v-card-title>
 
-                <v-text-field v-model="tarefa" class="ml-4" label="Escreva o título da lista aqui"></v-text-field>
+                <v-text-field v-model="tarefa" class="ml-4" label="Escreva a tarefa aqui"></v-text-field>
 
                 <v-divider></v-divider>
 
