@@ -17,7 +17,7 @@
       <v-row>
         <v-col cols="12">
           <v-row align="center" justify="center" dense v-for="(quadro, index) in items" :key="index">
-            <v-col cols="12" lg="6" md="6">
+            <v-col v-if="quadro" cols="12" lg="6" md="6">
               <v-card elevation="2" height="150" width="350" class="my-4" :color="quadro.corFundo">
                 <v-card-title>
                   <span :style="{ color: quadro.corTexto }">
@@ -106,7 +106,7 @@ export default {
     verificarFavoritados() {
       for (let i = 0; i < this.items.length; i++) {
         for (let j = 0; j < this.favoritados.length; j++) {
-          if (this.items[i].id === this.favoritados[j].id) {
+          if (this.items[i] &&  this.favoritados[j] && this.items[i].id === this.favoritados[j].id) {
             this.items[i].favorito = true
           }
         }
