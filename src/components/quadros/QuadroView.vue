@@ -34,12 +34,12 @@
                             <v-row>
                                 <h2 class="pa-5">{{ lista.titulo }}</h2>
                                 <v-layout class="mt-5" justify-end>
-                                        <ModalLista :permissaoEdicao="item.editavel" :tituloInicial="lista.titulo"
-                                            :index="index" :salvar="editarLista" />
+                                    <ModalLista :permissaoEdicao="item.editavel" :tituloInicial="lista.titulo"
+                                        :index="index" :salvar="editarLista" />
 
-                                        <v-btn small color="error"
-                                            :disabled="item.editavel !== undefined && item.editavel === false"
-                                            @click="apagarLista(index)" class="ml-1 mr-2"><v-icon>mdi-delete</v-icon></v-btn>
+                                    <v-btn small color="error"
+                                        :disabled="item.editavel !== undefined && item.editavel === false"
+                                        @click="apagarLista(index)" class="ml-1 mr-2"><v-icon>mdi-delete</v-icon></v-btn>
                                 </v-layout>
                             </v-row>
                             <draggable :options="{ disabled: item.editavel !== undefined && item.editavel === false }"
@@ -198,13 +198,25 @@ export default {
             this.salvarAlteracao()
         },
         favoritar() {
-            this.iconeFavoritado = "mdi-star"
-            axios.post(`http://localhost:8081/api/v1/quadro/favorite/${this.item.id}`, {}, this.httpOptions)
-                .then(() => {
-                    this.errorMessage = "";
-                }).catch(error => {
-                    this.errorMessage = error.response.data.message;
-                });
+
+            if (this.iconeFavoritado === "mdi-star") {
+                this.iconeFavoritado = "mdi-star-outline"
+                axios.delete(`http://localhost:8081/api/v1/quadro/favorite/${this.item.id}`, this.httpOptions)
+                    .then(() => {
+                        this.errorMessage = "";
+                    }).catch(error => {
+                        this.errorMessage = error.response.data.message;
+                    });
+            } else if (this.iconeFavoritado === "mdi-star-outline") {
+                this.iconeFavoritado = "mdi-star"
+                axios.post(`http://localhost:8081/api/v1/quadro/favorite/${this.item.id}`, {}, this.httpOptions)
+                    .then(() => {
+                        this.errorMessage = "";
+                    }).catch(error => {
+                        this.errorMessage = error.response.data.message;
+                    });
+            }
+
         },
         verificarFavoritado() {
             axios.get("http://localhost:8081/api/v1/usuario/get", this.httpOptions)

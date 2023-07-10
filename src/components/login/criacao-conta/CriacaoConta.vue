@@ -10,7 +10,6 @@
           <v-text-field v-model="form.nome" label="Entre o seu nome" ></v-text-field>
           <v-text-field v-model="form.email" label="Entre o seu e-mail" ></v-text-field>
           <v-text-field v-model="form.senha" type="password" label="Entre a sua senha" ></v-text-field>
-          <v-text-field v-model="form.senhaRepetida" type="password" label="Repita a senha" ></v-text-field>
           <v-btn type="submit" class="primary">Cria conta</v-btn>
       </v-form>
 
@@ -33,7 +32,6 @@
           nome: "",
           email: "",
           senha: "",
-          senhaRepetida: "",
         },
         error: ''
       }

@@ -7,37 +7,45 @@
                 </v-col>
                 <v-col cols="6" class="text-right">
                     <v-btn color="primary" class="mb-2 mr-2" @click="salvaQuadro">
-                        Salva
+                        Salvar
                     </v-btn>
                     <v-btn color="outlined" class="mb-2" @click="retornaLista">
-                        Lista
+                        Retornar a lista
                     </v-btn>
                 </v-col>
             </v-row>
         </v-container>
 
         <v-container>
-            <div class="text-center">
-                <v-row>
-                    <v-col md="10">
-                        <v-text-field v-model="item.titulo" class="ml-4"
-                            label="Escreva o título do quadro aqui"></v-text-field>
-                    </v-col>
-                </v-row>
-                <v-row>
-                    <v-card-text>Escolha a cor do Quadro</v-card-text>
-                    <v-col>
-                        <v-color-picker v-model="item.corFundo" hide-inputs show-swatches class="ml-4"></v-color-picker>
-                    </v-col>
-                </v-row>
+            <v-row>
+                <v-col md="10">
+                    <v-text-field v-model="item.titulo" class="ml-4" label="Escreva o título do quadro aqui"></v-text-field>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-layout justify-center>
+                    <div>
+                        <v-card-text>Escolha a cor do Quadro</v-card-text>
+                        <v-col>
+                            <v-color-picker v-model="item.corFundo" hide-inputs show-swatches class="ml-4"></v-color-picker>
+                        </v-col>
+                    </div>
 
-                <v-row>
-                    <v-card-text>Escolha a cor do texto</v-card-text>
-                    <v-col>
-                        <v-color-picker v-model="item.corTexto" hide-inputs show-swatches class="ml-4"></v-color-picker>
-                    </v-col>
-                </v-row>
-            </div>
+                </v-layout>
+
+            </v-row>
+
+            <v-row>
+                <v-layout justify-center>
+                    <div>
+                        <v-card-text>Escolha a cor do texto</v-card-text>
+                        <v-col>
+                            <v-color-picker v-model="item.corTexto" hide-inputs show-swatches class="ml-4"></v-color-picker>
+                        </v-col>
+                    </div>
+                </v-layout>
+
+            </v-row>
         </v-container>
     </div>
 </template>
@@ -56,7 +64,7 @@ export default {
                 { text: '', value: 'actions', sortable: false },
             ],
 
-            item: { },
+            item: {},
 
             novoIngrediente: {
                 item: '',
