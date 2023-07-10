@@ -23,8 +23,8 @@
                   {{ colecao.titulo }}
                 </v-card-title>
                 <v-card-actions>
-                  <ModalColecao :quadrosSelecionados="colecao?colecao.quadros:[]" :salvar="editarColecao"
-                    :tituloInicial="colecao?colecao.titulo:''" :index="index" :todosQuadros="labelsTodosQuadros" />
+                  <ModalColecao :quadrosSelecionados="colecao ? colecao.quadros : []" :salvar="editarColecao"
+                    :tituloInicial="colecao ? colecao.titulo : ''" :index="index" :todosQuadros="labelsTodosQuadros" />
                   <v-btn color="info" @click="visualizarColecao(colecao)"><v-icon>mdi-eye</v-icon></v-btn>
                   <v-btn color="error" class="mt-2 mb-2 mr-2" @click="removerColecao(index)">
                     <v-icon>mdi-delete</v-icon>
@@ -45,6 +45,7 @@ import axios from 'axios';
 import ModalColecao from "../modais/ModalColecao.vue"
 
 export default {
+  name: "Colecoes-Lista",
   props: ["controlador"],
   data() {
     return {
@@ -68,7 +69,13 @@ export default {
           let quadros = response.data.quadros;
           let compartilhados = response.data.compartilhados;
           this.todosQuadros = [...quadros, ...compartilhados]
-          this.labelsTodosQuadros = this.todosQuadros.map((i) => i.titulo)
+          if (Array.isArray(this.todosQuadros) && this.todosQuadros.length > 0) {
+            for(let i = 0; i< this.todosQuadros.length; i++) {
+              if(this.todosQuadros[i] !== null){
+                this.labelsTodosQuadros.push(this.todosQuadros[i].titulo)
+              }
+            }
+          }
         })
         .catch(error => {
           this.error = error.response.data.message;
@@ -123,7 +130,7 @@ export default {
     },
     visualizarColecao: function (item) {
       this.controlador.setItemSelecionado(item);
-      this.$router.replace("/quadros/colecoes/view");
+      this.$router.replace(`/quadros/colecoes/view/${item.titulo}`);
     },
   },
   mounted() {

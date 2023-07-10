@@ -44,21 +44,11 @@
   
   export default {
     props: ['controlador'],
-  
     data() {
       return {
-        headers: [
-          { text: 'ID', align: 'start', sortable: true, value: 'id' },
-          { text: 'Nome', align: 'start', sortable: true, value: 'nome' },
-          { text: '', value: 'actions', sortable: false },
-        ],
         item: null,
         grupo:'',
         favoritados: [],
-        totalItems: 0,
-        loading: false,
-        options: { itemsPerPage: 10 },
-        filtroNome: '',
         httpOptions: {
           headers: {
             'Authorization': 'Bearer ' + this.$root.credentials.token
@@ -69,7 +59,21 @@
   
     methods: {
       atualizaLista: function () {
-        this.item = this.controlador.itemSelecionado;
+        axios.get("http://localhost:8081/api/v1/usuario/get", this.httpOptions)
+        .then(response => {
+          console.log(response);
+          let colecoes = response.data.colecoes;
+          let colecaoAtual = this.$route.params.colecao.toString()
+          for(let i = 0; i< colecoes.length; i++) {
+            if(colecoes[i].titulo === colecaoAtual) {
+              this.item = colecoes[i]
+              this.controlador.setItemSelecionado(colecoes[i])
+            }
+          }      
+        })
+        .catch(error => {
+          this.error = error.response.data.message;
+        });
       },
     
       editarQuadro: function (item) {

@@ -124,12 +124,12 @@ const router = new Router({
   },
   {
     path: '/quadros/colecoes/',
-    name: 'colecoes-quadros',
+    name: 'Colecoes-Lista',
     component: ColecoesLista, 
     props: { 'controlador': controladorCadastro },
   },
   {
-    path: '/quadros/colecoes/view',
+    path: '/quadros/colecoes/view/:colecao',
     name: 'colecao-view',
     component: ColecaoView, 
     props: { 'controlador': controladorCadastro },

@@ -32,21 +32,22 @@
 </template>
      
 <script>
-//import axios from 'axios';
 export default {
     name: 'Modal-Colecao',
-    data: () => ({
-        visible: false,
-        items: [],
-        value: [],
-        titulo: ''
-    }),
     props: {
         salvar: { type: Function },
         tituloInicial: { type: String },
         todosQuadros: { type: Array },
         quadrosSelecionados: { type: Array },
         index: { type: Number },
+    },
+    data() {
+        return {
+            visible: false,
+            items: [],
+            value: [],
+            titulo: ''
+        };
     },
     methods: {
         setVisible() {
@@ -55,7 +56,7 @@ export default {
         prepara() {
             this.titulo = this.tituloInicial ? this.tituloInicial : ''
             this.items = this.todosQuadros,
-            this.value = this.quadrosSelecionados.length > 0 ? this.quadrosSelecionados.map((i) => i.titulo) : []
+            this.value = this.quadrosSelecionados.length > 0 ? this.quadrosSelecionados.map((i) => i !== null && i.titulo) : []
         },
         editarColecao() {
             this.salvar(this.index, this.titulo, this.value)
