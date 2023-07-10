@@ -53,11 +53,7 @@ export default {
       labelsTodosQuadros: [],
       todosQuadros: [],
       contadorNovasColecoes: 1,
-      httpOptions: {
-        headers: {
-          "Authorization": "Bearer " + this.$root.credentials.token
-        }
-      },
+      httpOptions: {},
     };
   },
   methods: {
@@ -70,8 +66,8 @@ export default {
           let compartilhados = response.data.compartilhados;
           this.todosQuadros = [...quadros, ...compartilhados]
           if (Array.isArray(this.todosQuadros) && this.todosQuadros.length > 0) {
-            for(let i = 0; i< this.todosQuadros.length; i++) {
-              if(this.todosQuadros[i] !== null){
+            for (let i = 0; i < this.todosQuadros.length; i++) {
+              if (this.todosQuadros[i] !== null) {
                 this.labelsTodosQuadros.push(this.todosQuadros[i].titulo)
               }
             }
@@ -132,10 +128,18 @@ export default {
       this.controlador.setItemSelecionado(item);
       this.$router.replace(`/quadros/colecoes/view/${item.titulo}`);
     },
+    inicializarValores() {
+      this.$root.credentials = JSON.parse(localStorage.getItem('credentials'))
+      this.httpOptions = {
+        headers: {
+          'Authorization': 'Bearer ' + this.$root.credentials.token
+        }
+      }
+      this.atualizaLista();
+    },
   },
   mounted() {
-    console.log("mounted");
-    this.atualizaLista();
+    this.inicializarValores();
   },
   components: { ModalColecao }
 }

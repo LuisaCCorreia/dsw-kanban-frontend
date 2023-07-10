@@ -49,11 +49,7 @@
         item: null,
         grupo:'',
         favoritados: [],
-        httpOptions: {
-          headers: {
-            'Authorization': 'Bearer ' + this.$root.credentials.token
-          }
-        },
+        httpOptions: {},
       }
     },
   
@@ -100,12 +96,20 @@
   
       visualizarQuadro: function (item) {
         this.controlador.setItemSelecionado(item);
-        this.$router.replace('/quadros/view');
+        this.$router.replace(`/quadros/view/${item.id}`);
       },
+      inicializarValores() {
+            this.$root.credentials = JSON.parse(localStorage.getItem('credentials'))
+            this.httpOptions = {
+                headers: {
+                    'Authorization': 'Bearer ' + this.$root.credentials.token
+                }
+            }
+            this.atualizaLista();
+        },
     },
     mounted() {
-      console.log("mounted")
-      this.atualizaLista();
+      this.inicializarValores()
     }
   }
   </script>

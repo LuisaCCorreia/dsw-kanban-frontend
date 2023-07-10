@@ -63,11 +63,7 @@ export default {
       loading: false,
       options: { itemsPerPage: 10 },
       filtroNome: '',
-      httpOptions: {
-        headers: {
-          'Authorization': 'Bearer ' + this.$root.credentials.token
-        }
-      },
+      httpOptions: {},
     }
   },
 
@@ -106,7 +102,7 @@ export default {
     verificarFavoritados() {
       for (let i = 0; i < this.items.length; i++) {
         for (let j = 0; j < this.favoritados.length; j++) {
-          if (this.items[i] &&  this.favoritados[j] && this.items[i].id === this.favoritados[j].id) {
+          if (this.items[i] && this.favoritados[j] && this.items[i].id === this.favoritados[j].id) {
             this.items[i].favorito = true
           }
         }
@@ -115,12 +111,21 @@ export default {
 
     visualizarQuadro: function (item) {
       this.controlador.setItemSelecionado(item);
-      this.$router.replace('/quadros/view');
+      this.$router.replace(`/quadros/view/${item.id}`);
+    },
+    inicializarValores() {
+      this.$root.credentials = JSON.parse(localStorage.getItem('credentials'))
+      this.httpOptions = {
+        headers: {
+          'Authorization': 'Bearer ' + this.$root.credentials.token
+        }
+      }
+      this.atualizaLista();
     },
   },
   mounted() {
+    this.inicializarValores();
     console.log("mounted")
-    this.atualizaLista();
   }
 }
 </script>

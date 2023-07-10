@@ -105,7 +105,7 @@ const router = new Router({
     props: { 'controlador': controladorCadastro },
   },
   {
-    path: '/quadros/view',
+    path: '/quadros/view/:id',
     name: 'quadros-remove',
     component: QuadroView, 
     props: { 'controlador': controladorCadastro },

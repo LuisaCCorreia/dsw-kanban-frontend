@@ -1,5 +1,5 @@
 <template>
-    <div v-show="this.$root.credentials" :style="{ backgroundColor: item.corFundo, height: '100%' }">
+    <div v-if="item" v-show="this.$root.credentials" :style="{ backgroundColor: item.corFundo, height: '100%' }">
         <v-container>
             <v-row>
                 <v-col cols="6">
@@ -87,18 +87,42 @@ export default {
             listas: [],
             contadorNovasListas: 1,
             edicaoLista: false,
-            httpOptions: {
-                headers: {
-                    "Authorization": "Bearer " + this.$root.credentials.token
-                }
-            },
+            httpOptions: {},
         };
     },
     methods: {
+        retornaDadosCompartilhado(compartilhados){
+            let quadrosCompartilhados = []
+            for(let i = 0; i< compartilhados.length; i++) {
+                if(compartilhados[i] !== null) {
+                    quadrosCompartilhados.push({...compartilhados[i].quadro, editavel:compartilhados[i].editavel})
+                }
+            }
+            return quadrosCompartilhados
+        },
         prepara: function () {
-            this.item = this.controlador.itemSelecionado;
-            this.listas = this.item.listas ? this.item.listas : [];
-            this.iconeFavoritado = this.item.favorito ? "mdi-star" : "mdi-star-outline"
+            axios.get("http://localhost:8081/api/v1/usuario/get", this.httpOptions)
+                .then(response => {
+                    console.log(response)
+                    let quadros = response.data.quadros;
+                    let compartilhados = this.retornaDadosCompartilhado(response.data.compartilhados)
+                    const todosQuadros = [...quadros, ...compartilhados]
+                    let quadroAtual = this.$route.params.id.toString()
+                    for (let i = 0; i < todosQuadros.length; i++) {
+                        console.log(todosQuadros[i])
+                        console.log(quadroAtual)
+                        if (todosQuadros[i] !== null && todosQuadros[i].id === quadroAtual) {
+                            this.item = todosQuadros[i]
+                            this.controlador.setItemSelecionado(todosQuadros[i])
+                        }
+                    }
+                    this.listas = this.item ? this.item.listas : [];
+                    this.iconeFavoritado = ( this.item && this.item.favorito) ? "mdi-star" : "mdi-star-outline"
+                })
+                .catch(error => {
+                    console.log(error)
+                    this.error = error.response.data.message;
+                });
         },
         novaLista() {
             this.listas.push({ titulo: `Nova Lista ${this.contadorNovasListas}`, tarefas: [] })
@@ -222,7 +246,7 @@ export default {
             axios.get("http://localhost:8081/api/v1/usuario/get", this.httpOptions)
                 .then(response => {
                     let favoritos = response.data.favoritos
-                    let favoritado = favoritos.find((i) => i.id === this.item.id)
+                    let favoritado = favoritos.find((i) => this.item !== null && i !== null && i.id === this.item.id)
                     if (favoritado) {
                         this.iconeFavoritado = "mdi-star"
                     }
@@ -232,9 +256,18 @@ export default {
                     this.error = error;
                 })
         },
+        inicializarValores() {
+            this.$root.credentials = JSON.parse(localStorage.getItem('credentials'))
+            this.httpOptions = {
+                headers: {
+                    'Authorization': 'Bearer ' + this.$root.credentials.token
+                }
+            }
+            this.prepara();
+        },
     },
     created() {
-        this.prepara();
+        this.inicializarValores();
     },
     mounted() {
         this.verificarFavoritado()
