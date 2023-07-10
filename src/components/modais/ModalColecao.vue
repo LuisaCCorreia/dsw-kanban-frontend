@@ -34,7 +34,7 @@
 <script>
 //import axios from 'axios';
 export default {
-    name: 'Modal-Lista',
+    name: 'Modal-Colecao',
     data: () => ({
         visible: false,
         items: [],
@@ -55,7 +55,7 @@ export default {
         prepara() {
             this.titulo = this.tituloInicial ? this.tituloInicial : ''
             this.items = this.todosQuadros,
-                this.value = this.quadrosSelecionados.length > 0 ? this.quadrosSelecionados.map((i) => i.titulo) : []
+            this.value = this.quadrosSelecionados.length > 0 ? this.quadrosSelecionados.map((i) => i.titulo) : []
         },
         editarColecao() {
             this.salvar(this.index, this.titulo, this.value)

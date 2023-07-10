@@ -18,13 +18,13 @@
         <v-col cols="12">
           <v-row align="center" justify="center" dense>
             <v-col v-for="(colecao, index) in items" :key="index" lg="3" md="3">
-              <v-card elevation="2" height="150" width="225" class="my-4">
+              <v-card v-if="colecao" elevation="2" height="150" width="225" class="my-4">
                 <v-card-title>
                   {{ colecao.titulo }}
                 </v-card-title>
                 <v-card-actions>
-                  <ModalColecao :quadrosSelecionados="colecao.quadros" :salvar="editarColecao"
-                    :tituloInicial="colecao.titulo" :index="index" :todosQuadros="labelsTodosQuadros" />
+                  <ModalColecao :quadrosSelecionados="colecao?colecao.quadros:[]" :salvar="editarColecao"
+                    :tituloInicial="colecao?colecao.titulo:''" :index="index" :todosQuadros="labelsTodosQuadros" />
                   <v-btn color="info" @click="visualizarColecao(colecao)"><v-icon>mdi-eye</v-icon></v-btn>
                   <v-btn color="error" class="mt-2 mb-2 mr-2" @click="removerColecao(index)">
                     <v-icon>mdi-delete</v-icon>
@@ -90,6 +90,7 @@ export default {
       axios.post(`http://localhost:8081/api/v1/usuario/collection`, { colecoes: this.items }, this.httpOptions)
         .then(() => {
           this.errorMessage = "";
+          this.atualizaLista()
         }).catch(error => {
           this.errorMessage = error.response.data.message;
         });

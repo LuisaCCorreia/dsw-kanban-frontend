@@ -12,7 +12,7 @@
         <v-row>
           <v-col cols="12">
             <v-row align="center" justify="center" dense v-for="(quadro, index) in item.quadros" :key="index">
-              <v-col cols="12" lg="6" md="6">
+              <v-col v-if="quadro" cols="12" lg="6" md="6">
                 <v-card elevation="2" height="150" width="350" class="my-4" :color="quadro.corFundo">
                   <v-card-title>
                     <span :style="{ color: quadro.corTexto }">
